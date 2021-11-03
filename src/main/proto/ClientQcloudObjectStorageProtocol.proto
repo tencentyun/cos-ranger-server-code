@@ -1,0 +1,66 @@
+syntax = "proto2";
+
+option java_package = "org.apache.hadoop.fs.cosn.ranger.protocol";
+option java_outer_classname = "ClientQCloudObjectStorageProtocolProtos";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+
+package qcloud.object.storage;
+
+import "Security.proto";
+
+enum ServiceType {
+    COS = 0;
+    CHDFS = 1;
+}
+
+enum AccessType {
+    LIST = 1;
+    WRITE = 2;
+    READ = 3;
+    DELETE = 4;
+}
+
+message CheckPermissionRequest {
+    required ServiceType serviceType = 1;
+    required AccessType accessType = 2;
+
+    optional string bucketName = 3;
+    optional string objectKey = 4;
+
+    optional string fsMountPoint = 5;
+    optional string chdfsPath = 6;
+}
+
+message CheckPermissionResponse {
+    required bool allowed = 1;
+}
+
+message GetSTSRequest {
+    optional string bucketName = 1;
+    optional string bucketRegion = 2;
+    optional string allowPrefix = 3;
+}
+
+message GetSTSResponse {
+    optional string tempAK = 1;
+    optional string tempSK = 2;
+    optional string tempToken = 3;
+}
+
+message GetRangerPolicyUrlRequest {
+
+}
+
+message GetRangerPolicyUrlResponse {
+    optional string rangerPolicyUrl = 1;
+}
+
+service ClientQcloudObjectStorageProtocol {
+    rpc getDelegationToken (hadoop.common.GetDelegationTokenRequestProto) returns (hadoop.common.GetDelegationTokenResponseProto);
+    rpc renewDelegationToken (hadoop.common.RenewDelegationTokenRequestProto) returns (hadoop.common.RenewDelegationTokenResponseProto);
+    rpc cancelDelegationToken (hadoop.common.CancelDelegationTokenRequestProto) returns (hadoop.common.CancelDelegationTokenResponseProto);
+    rpc checkPermission (CheckPermissionRequest) returns (CheckPermissionResponse);
+    rpc getSTS (GetSTSRequest) returns (GetSTSResponse);
+    rpc getRangerPolicyUrl(GetRangerPolicyUrlRequest) returns (GetRangerPolicyUrlResponse);
+}
